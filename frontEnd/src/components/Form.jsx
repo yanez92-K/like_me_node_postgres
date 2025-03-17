@@ -1,35 +1,57 @@
-function Form({ setTitulo, setImgSRC, setDescripcion, agregarPost }) {
+const Form = ({
+  titulo,
+  imgSrc,
+  descripcion,
+  setTitulo,
+  setImgSRC,
+  setDescripcion,
+  agregarPost,
+}) => {
+  // Manejo del envío del formulario
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    agregarPost(); // 🔹 Llama a la función de agregar
+  };
+
   return (
-    <div className="form">
-      <div className="mb-2">
-        <h6>Agregar post</h6>
-        <label>Título</label>
-        <input
-          onChange={(event) => setTitulo(event.target.value)}
-          className="form-control"
-        />
-      </div>
-      <div className="mb-2">
-        <label>URL de la imagen</label>
-        <input
-          onChange={(event) => setImgSRC(event.target.value)}
-          className="form-control"
-        />
-      </div>
+    <form
+      onSubmit={handleSubmit}
+      className="p-3 border rounded bg-primary text-white"
+    >
+      <h3 className="text-center">Agregar Post</h3>
+
       <div className="mb-3">
-        <label>Descripción</label> <br />
-        <textarea
-          onChange={(event) => setDescripcion(event.target.value)}
+        <input
+          type="text"
           className="form-control"
+          placeholder="Título"
+          value={titulo} // 🔹 USO DEL ESTADO CONTROLADO
+          onChange={(e) => setTitulo(e.target.value)}
+        />
+      </div>
+
+      <div className="mb-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="URL de la imagen"
+          value={imgSrc} // 🔹 USO DEL ESTADO CONTROLADO
+          onChange={(e) => setImgSRC(e.target.value)}
+        />
+      </div>
+
+      <div className="mb-3">
+        <textarea
+          className="form-control"
+          placeholder="Descripción"
+          value={descripcion} // 🔹 USO DEL ESTADO CONTROLADO
+          onChange={(e) => setDescripcion(e.target.value)}
         ></textarea>
       </div>
-      <div className="d-flex">
-        <button onClick={agregarPost} className="btn btn-light m-auto">
-          Agregar
-        </button>
-      </div>
-    </div>
-  );
-}
 
-export default Form;
+      <button type="submit" className="btn btn-light w-50">
+        Agregar
+      </button>
+    </form>
+  );
+};

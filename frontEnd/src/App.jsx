@@ -12,31 +12,63 @@ function App() {
   const [posts, setPosts] = useState([]);
 
   const getPosts = async () => {
-    const { data: posts } = await axios.get(urlBaseServer + "/posts");
-    setPosts([...posts]);
+    try {
+      const { data: posts } = await axios.get(urlBaseServer + "/posts");
+      setPosts(posts);
+      console.log(posts);
+    } catch (error) {
+      console.error("Error al obtener posts:", error);
+    }
   };
-
   const agregarPost = async () => {
-    const post = { titulo, url: imgSrc, descripcion };
-    await axios.post(urlBaseServer + "/posts", post);
-    getPosts();
+    try {
+      const newPost = { titulo, img: imgSrc, descripcion, likes: 0 };
+
+      await axios.post(urlBaseServer + "/posts", newPost, {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      console.log("✅ Post agregado con éxito");
+
+      // 🔹 Asegurar actualización de la lista de posts
+      await getPosts();
+
+      setTitulo("");
+      setImgSRC("");
+      setDescripcion("");
+    } catch (error) {
+      console.error(
+        "Error al agregar post:",
+        error.response?.data || error.message
+      );
+    }
   };
 
-  // este método se utilizará en el siguiente desafío
   const like = async (id) => {
-    await axios.put(urlBaseServer + `/posts/like/${id}`);
-    getPosts();
+    try {
+      await axios.put(urlBaseServer + `/posts/like/${id}`);
+      await getPosts(); // 🔹 Asegura actualización después del like
+    } catch (error) {
+      console.error("Error al dar like:", error);
+    }
   };
 
-  // este método se utilizará en el siguiente desafío
   const eliminarPost = async (id) => {
-    await axios.delete(urlBaseServer + `/posts/${id}`);
-    getPosts();
+    try {
+      await axios.delete(urlBaseServer + `/posts/${id}`);
+      await getPosts(); // 🔹 Asegura actualización después de eliminar
+    } catch (error) {
+      console.error("Error al eliminar post:", error);
+    }
   };
 
   useEffect(() => {
     getPosts();
   }, []);
+
+  useEffect(() => {
+    console.log("📢 Lista de posts actualizada:", posts);
+  }, [posts]); // Se ejecuta cada vez que posts cambia
 
   return (
     <div className="App">
@@ -44,6 +76,9 @@ function App() {
       <div className="row m-auto px-5">
         <div className="col-12 col-sm-4">
           <Form
+            titulo={titulo}
+            imgSrc={imgSrc}
+            descripcion={descripcion}
             setTitulo={setTitulo}
             setImgSRC={setImgSRC}
             setDescripcion={setDescripcion}
@@ -52,12 +87,7 @@ function App() {
         </div>
         <div className="col-12 col-sm-8 px-5 row posts align-items-start">
           {posts.map((post, i) => (
-            <Post
-              key={i}
-              post={post}
-              like={like}
-              eliminarPost={eliminarPost}
-            />
+            <Post key={i} post={post} like={like} eliminarPost={eliminarPost} />
           ))}
         </div>
       </div>
